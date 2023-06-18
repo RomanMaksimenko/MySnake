@@ -99,7 +99,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 
-    Init();
+    
    hInst = hInstance; // Store instance handle in our global variable
   // Creating specific sized window
    RECT window_rect;
@@ -119,7 +119,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-
+   Init(hWnd);
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -169,6 +169,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+    case WM_TIMER:
+    {    
+        if(wParam==Timer_ID)
+        return On_Timer();
+        break;
+    }
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
