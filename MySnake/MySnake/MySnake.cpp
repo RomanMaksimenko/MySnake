@@ -75,7 +75,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYSNAKE));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.hbrBackground  = CreateSolidBrush(RGB(0,0,0));//Changing background color to black
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MYSNAKE);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -96,9 +96,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
+   //Creating specific sized window
+   RECT window_rect;
+   window_rect.left = 0;
+   window_rect.top = 0;
+   window_rect.right = 640;
+   window_rect.bottom = 480;
+   AdjustWindowRect(
+       &window_rect,
+       WS_OVERLAPPED,
+       TRUE
+   );
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      0, 0, window_rect.right- window_rect.left, window_rect.bottom- window_rect.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
