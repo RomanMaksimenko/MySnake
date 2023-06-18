@@ -1,5 +1,13 @@
 #include "Engine.h"
 
+enum ESnake_Direction {
+    ESD_None,
+    ESD_Left,
+    ESD_Right,
+    ESD_Up,
+    ESD_down
+};
+
 //Global Variables
 RECT Game_Board,Snake,Prev_Snake;
 const int GB_X_Offset = 5;
@@ -15,6 +23,7 @@ int Snake_Y_Pos = 150;
 int Prev_Snake_X_Pos= Snake_X_Pos;
 int Prev_Snake_Y_Pos= Snake_Y_Pos;
 int Snake_Size = 10;
+ESnake_Direction Direction=ESD_None;
 
 
 
@@ -33,8 +42,8 @@ void Init(HWND hWnd) {
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
     
     Hwnd = hWnd;
-    Redraw_Snake();
-    SetTimer(Hwnd, Timer_ID, 50, 0);
+    //Redraw_Snake();
+    SetTimer(Hwnd, Timer_ID, 100, 0);
 }
 //---------------------------------------------------------------------------------
 void Draw_Game_Board(HDC hdc) {//Drawing board of gamefield
@@ -69,25 +78,40 @@ void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
 //---------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
     Draw_Game_Board(hdc);
-    Draw_Snake(hdc,paint_area);
+    Draw_Snake(hdc, paint_area);
 }
 //---------------------------------------------------------------------------------
-int On_Timer() {
-
+int On_Timer() {//Snake`s moving on timer
+    switch (Direction)
+    {
+    case ESD_None:
+        break;
+    case ESD_Left:Snake_X_Pos -= Snake_Size/2;
+        break;
+    case ESD_Right:Snake_X_Pos += Snake_Size/2;
+        break;
+    case ESD_Up:Snake_Y_Pos -= Snake_Size/2;
+        break;
+    case ESD_down:Snake_Y_Pos += Snake_Size/2;
+        break;
+    default:
+        break;
+    }
+    Redraw_Snake();
     return 0;
 }
-int On_Key_Down(EKey_Type key) {
+int On_Key_Down(EKey_Type key) {//Changing direction of Snake`s moving on key down
     switch (key)
     {
     case EKT_None:
         break;
-    case EKT_Up:Snake_Y_Pos -= Snake_Size; Redraw_Snake();
+    case EKT_Up:if(Direction!= ESD_down)Direction = ESD_Up;
         break;
-    case EKT_Down:Snake_Y_Pos += Snake_Size; Redraw_Snake();
+    case EKT_Down: if (Direction != ESD_Up)Direction = ESD_down;
         break;
-    case EKT_Left:Snake_X_Pos -= Snake_Size; Redraw_Snake();
+    case EKT_Left: if (Direction != ESD_Right)Direction = ESD_Left;
         break;
-    case EKT_Right:Snake_X_Pos += Snake_Size; Redraw_Snake();
+    case EKT_Right: if (Direction != ESD_Left)Direction = ESD_Right;
         break;
     default:
         break;
