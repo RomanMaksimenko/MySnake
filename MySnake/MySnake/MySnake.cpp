@@ -11,15 +11,6 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-RECT Game_Board;
-const int ToolBar_Height = 50;
-const int Game_Screen_Width = 640;
-const int Game_Screen_Height = 480;
-const int GB_X_Offset = 5;
-const int GB_Y_Offset = 5;
-const int GB_Width = Game_Screen_Height -  2 * GB_X_Offset;
-const int GB_Height = Game_Screen_Height - ToolBar_Height - 2*GB_Y_Offset-3;
-
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -103,12 +94,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        create and display the main program window.
 //
 
-void Init() {
-    Game_Board.left = GB_X_Offset;
-    Game_Board.top = GB_Y_Offset;
-    Game_Board.right = GB_Width;
-    Game_Board.bottom = GB_Height;
-}
+
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
@@ -151,17 +137,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
-void Draw_Game_Board(HDC hdc) {//Drawing board of game field
-   
-    HBRUSH gb_brush = CreateSolidBrush(RGB(255, 255, 255));
-    SelectObject(hdc, gb_brush);
-    FrameRect(hdc, &Game_Board,gb_brush);
-    
-}
 
-void Draw_Frame(HDC hdc) {//Drawing game screen
-    Draw_Game_Board(hdc);
-}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
