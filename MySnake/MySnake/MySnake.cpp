@@ -165,16 +165,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-            Draw_Frame(hdc);
+            Draw_Frame(hdc,ps.rcPaint);
             EndPaint(hWnd, &ps);
+        }
+        break;
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_LEFT:return On_Key_Down(EKT_Left); break;
+        case VK_RIGHT:return On_Key_Down(EKT_Right); break;
+        case VK_UP:return On_Key_Down(EKT_Up); break;
+        case VK_DOWN:return On_Key_Down(EKT_Down); break;
         }
         break;
     case WM_TIMER:
     {    
         if(wParam==Timer_ID)
         return On_Timer();
-        break;
     }
+
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

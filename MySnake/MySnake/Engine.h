@@ -1,6 +1,13 @@
 #pragma once
 #include <Windows.h>
-
+// Enums
+enum EKey_Type {
+	EKT_None,
+	EKT_Up,
+	EKT_Down,
+	EKT_Left,
+	EKT_Right
+};
 
 //Global Variables
 
@@ -11,6 +18,7 @@ const int Timer_ID = WM_USER + 1;
 
 
 void Init(HWND hWnd);
-void Draw_Frame(HDC);
+void Draw_Frame(HDC, RECT&);
 int On_Timer();
+int On_Key_Down(EKey_Type);
 
