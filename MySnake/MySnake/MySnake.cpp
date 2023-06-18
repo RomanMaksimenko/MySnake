@@ -11,6 +11,15 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
+RECT Game_Board;
+const int ToolBar_Height = 50;
+const int Game_Screen_Width = 640;
+const int Game_Screen_Height = 480;
+const int GB_X_Offset = 5;
+const int GB_Y_Offset = 5;
+const int GB_Width = Game_Screen_Height -  2 * GB_X_Offset;
+const int GB_Height = Game_Screen_Height - ToolBar_Height - 2*GB_Y_Offset-3;
+
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -93,23 +102,32 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
+
+void Init() {
+    Game_Board.left = GB_X_Offset;
+    Game_Board.top = GB_Y_Offset;
+    Game_Board.right = GB_Width;
+    Game_Board.bottom = GB_Height;
+}
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
+
+    Init();
    hInst = hInstance; // Store instance handle in our global variable
-   //Creating specific sized window
+  // Creating specific sized window
    RECT window_rect;
    window_rect.left = 0;
    window_rect.top = 0;
-   window_rect.right = 640;
-   window_rect.bottom = 480;
+   window_rect.right = Game_Screen_Width;
+   window_rect.bottom = Game_Screen_Height;
    AdjustWindowRect(
        &window_rect,
-       WS_OVERLAPPED,
+       WS_OVERLAPPEDWINDOW,
        TRUE
    );
-
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      0, 0, window_rect.right- window_rect.left, window_rect.bottom- window_rect.top, nullptr, nullptr, hInstance, nullptr);
+      0, 0, Game_Screen_Width, Game_Screen_Height, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -132,6 +150,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 //
+
+void Draw_Game_Board(HDC hdc) {//Drawing board of game field
+   
+    HBRUSH gb_brush = CreateSolidBrush(RGB(255, 255, 255));
+    SelectObject(hdc, gb_brush);
+    FrameRect(hdc, &Game_Board,gb_brush);
+    
+}
+
+void Draw_Frame(HDC hdc) {//Drawing game screen
+    Draw_Game_Board(hdc);
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -158,6 +189,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
+            Draw_Frame(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
