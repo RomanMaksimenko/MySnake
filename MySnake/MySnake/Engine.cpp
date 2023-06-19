@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <time.h>
+#include<vector>
 #include "Engine.h"
 
 enum ESnake_Direction {
@@ -18,18 +21,24 @@ const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset-10 ;
 HPEN Snake_Pen,BG_Pen;
 HBRUSH GB_Brush, Snake_Brush,BG_Brush;
 HWND Hwnd;
-int Snake_X_Pos = 50;
-int Snake_Y_Pos = 150;
+int Snake_X_Pos;
+int Snake_Y_Pos;
 int Prev_Snake_X_Pos= Snake_X_Pos;
 int Prev_Snake_Y_Pos= Snake_Y_Pos;
 int Snake_Size = 10;
 ESnake_Direction Direction=ESD_None;
+std::vector<RECT>SNAKE(3);
+std::vector<RECT>PREV_SNAKE(3);
 
 
 
 void Redraw_Snake();
 //---------------------------------------------------------------------------------
 void Init(HWND hWnd) {
+
+    srand(time(NULL));
+    Snake_X_Pos = rand() % GB_Width;
+    Snake_Y_Pos = rand() % GB_Height;
     Game_Board.left = GB_X_Offset;
     Game_Board.top = GB_Y_Offset;
     Game_Board.right = GB_Width;
@@ -42,7 +51,14 @@ void Init(HWND hWnd) {
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
     
     Hwnd = hWnd;
-    //Redraw_Snake();
+
+    SNAKE[2].left = Snake_X_Pos;
+    SNAKE[2].top = Snake_Y_Pos;
+    SNAKE[2].right = SNAKE[2].left + Snake_Size;
+    SNAKE[2].bottom = SNAKE[2].top + Snake_Size;
+    SNAKE[1] = SNAKE[0] = SNAKE[2];
+
+    Redraw_Snake();
     SetTimer(Hwnd, Timer_ID, 100, 0);
 }
 //---------------------------------------------------------------------------------
@@ -55,24 +71,31 @@ void Draw_Game_Board(HDC hdc) {//Drawing board of gamefield
 }
 //---------------------------------------------------------------------------------
 void Redraw_Snake() {
-    Prev_Snake = Snake;
-    Snake.left = Snake_X_Pos;
-    Snake.top = Snake_Y_Pos;
-    Snake.right = Snake.left + Snake_Size;
-    Snake.bottom = Snake.top + Snake_Size;
-    InvalidateRect(Hwnd, &Prev_Snake, FALSE);
-    InvalidateRect(Hwnd, &Snake, FALSE);
+    PREV_SNAKE = SNAKE;
+
+    SNAKE[2].left = Snake_X_Pos;
+    SNAKE[2].top = Snake_Y_Pos;
+    SNAKE[2].right = SNAKE[2].left + Snake_Size;
+    SNAKE[2].bottom = SNAKE[2].top + Snake_Size;
+    SNAKE[1] = PREV_SNAKE[2];
+    SNAKE[0] = PREV_SNAKE[1];
+    for(int i=2;i>=0;--i)
+    InvalidateRect(Hwnd, &PREV_SNAKE[i], FALSE);
+    for (int i = 2; i >= 0; --i)
+    InvalidateRect(Hwnd, &SNAKE[i], FALSE);
 }
 //---------------------------------------------------------------------------------
 void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
 
     SelectObject(hdc, BG_Pen);
     SelectObject(hdc, BG_Brush);
-    Rectangle(hdc, Prev_Snake.left,Prev_Snake.top, Prev_Snake.left + Snake_Size, Prev_Snake.top + Snake_Size);
+    for(int i=2;i>=0;--i)
+    Rectangle(hdc, PREV_SNAKE[i].left, PREV_SNAKE[i].top, PREV_SNAKE[i].left + Snake_Size, PREV_SNAKE[i].top + Snake_Size);
 
     SelectObject(hdc, Snake_Pen);
     SelectObject(hdc, Snake_Brush);
-    Rectangle(hdc, Snake_X_Pos, Snake_Y_Pos, Snake_X_Pos + Snake_Size, Snake_Y_Pos + Snake_Size);
+    for(int i=2;i>=0;--i)
+    Rectangle(hdc, SNAKE[i].left, SNAKE[i].top, SNAKE[i].left + Snake_Size, SNAKE[i].top + Snake_Size);
 
 }
 //---------------------------------------------------------------------------------
