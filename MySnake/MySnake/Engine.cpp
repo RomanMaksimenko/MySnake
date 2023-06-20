@@ -35,10 +35,11 @@ std::vector<RECT>PREV_SNAKE(3);
 void Redraw_Snake();
 //---------------------------------------------------------------------------------
 void Init(HWND hWnd) {
-
+    //Starting snake from random position
     srand(time(NULL));
     Snake_X_Pos = rand() % GB_Width;
     Snake_Y_Pos = rand() % GB_Height;
+    //Init boarders of gamefield
     Game_Board.left = GB_X_Offset;
     Game_Board.top = GB_Y_Offset;
     Game_Board.right = GB_Width;
@@ -60,6 +61,10 @@ void Init(HWND hWnd) {
 
     Redraw_Snake();
     SetTimer(Hwnd, Timer_ID, 100, 0);
+}
+//---------------------------------------------------------------------------------
+void Draw_Game_Board() {
+    InvalidateRect(Hwnd, &Game_Board, FALSE);
 }
 //---------------------------------------------------------------------------------
 void Draw_Game_Board(HDC hdc) {//Drawing board of gamefield
@@ -86,12 +91,12 @@ void Redraw_Snake() {
 }
 //---------------------------------------------------------------------------------
 void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
-
+    //Delete previos snake`s frame
     SelectObject(hdc, BG_Pen);
     SelectObject(hdc, BG_Brush);
     for(int i=2;i>=0;--i)
     Rectangle(hdc, PREV_SNAKE[i].left, PREV_SNAKE[i].top, PREV_SNAKE[i].left + Snake_Size, PREV_SNAKE[i].top + Snake_Size);
-
+    //Drawing snake
     SelectObject(hdc, Snake_Pen);
     SelectObject(hdc, Snake_Brush);
     for(int i=2;i>=0;--i)
@@ -109,13 +114,13 @@ int On_Timer() {//Snake`s moving on timer
     {
     case ESD_None:
         break;
-    case ESD_Left:Snake_X_Pos -= Snake_Size/2;
+    case ESD_Left:Snake_X_Pos -= Snake_Size / 2; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size;
         break;
-    case ESD_Right:Snake_X_Pos += Snake_Size/2;
+    case ESD_Right:Snake_X_Pos += Snake_Size/2; if (Snake_X_Pos >= GB_Width-Snake_Size)Snake_X_Pos = GB_X_Offset;
         break;
-    case ESD_Up:Snake_Y_Pos -= Snake_Size/2;
+    case ESD_Up:Snake_Y_Pos -= Snake_Size / 2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size;
         break;
-    case ESD_down:Snake_Y_Pos += Snake_Size/2;
+    case ESD_down:Snake_Y_Pos += Snake_Size/2; if (Snake_Y_Pos >= GB_Height - Snake_Size)Snake_Y_Pos = GB_Y_Offset;
         break;
     default:
         break;
