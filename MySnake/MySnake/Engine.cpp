@@ -17,6 +17,8 @@ const int GB_X_Offset = 5;
 const int GB_Y_Offset = 5;
 const int GB_Width = Game_Screen_Height - GB_X_Offset;
 const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset-10 ;
+const int Border_Width = 5;
+const int Snake_Size = 10;
 
 HPEN Snake_Pen,BG_Pen;
 HBRUSH GB_Brush, Snake_Brush,BG_Brush;
@@ -25,7 +27,6 @@ int Snake_X_Pos;
 int Snake_Y_Pos;
 int Prev_Snake_X_Pos= Snake_X_Pos;
 int Prev_Snake_Y_Pos= Snake_Y_Pos;
-int Snake_Size = 10;
 ESnake_Direction Direction=ESD_None;
 std::vector<RECT>SNAKE(3);
 std::vector<RECT>PREV_SNAKE(3);
@@ -67,11 +68,20 @@ void Draw_Game_Board() {
     InvalidateRect(Hwnd, &Game_Board, FALSE);
 }
 //---------------------------------------------------------------------------------
-void Draw_Game_Board(HDC hdc) {//Drawing board of gamefield
+void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
     
     SelectObject(hdc, GB_Brush);
-    FrameRect(hdc, &Game_Board, GB_Brush);
+    //Top Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.right, Game_Board.top + Border_Width);
+    //Bottom Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.bottom - Border_Width, Game_Board.right, Game_Board.bottom);
+    //Left Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.left + Border_Width, Game_Board.bottom);
+    //Right Gamefield border
+    Rectangle(hdc, Game_Board.right- Border_Width, Game_Board.top, Game_Board.right, Game_Board.bottom);
+    
+
 
 }
 //---------------------------------------------------------------------------------
@@ -114,13 +124,13 @@ int On_Timer() {//Snake`s moving on timer
     {
     case ESD_None:
         break;
-    case ESD_Left:Snake_X_Pos -= Snake_Size / 2; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size;
+    case ESD_Left:Snake_X_Pos -= Snake_Size / 2; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size-Border_Width;
         break;
-    case ESD_Right:Snake_X_Pos += Snake_Size/2; if (Snake_X_Pos >= GB_Width-Snake_Size)Snake_X_Pos = GB_X_Offset;
+    case ESD_Right:Snake_X_Pos += Snake_Size/2; if (Snake_X_Pos >= GB_Width-Snake_Size - Border_Width / 2)Snake_X_Pos = GB_X_Offset+ Border_Width;
         break;
-    case ESD_Up:Snake_Y_Pos -= Snake_Size / 2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size;
+    case ESD_Up:Snake_Y_Pos -= Snake_Size / 2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size- Border_Width;
         break;
-    case ESD_down:Snake_Y_Pos += Snake_Size/2; if (Snake_Y_Pos >= GB_Height - Snake_Size)Snake_Y_Pos = GB_Y_Offset;
+    case ESD_down:Snake_Y_Pos += Snake_Size/2; if (Snake_Y_Pos >= GB_Height - Snake_Size - Border_Width / 2)Snake_Y_Pos = GB_Y_Offset+ Border_Width;
         break;
     default:
         break;
