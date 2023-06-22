@@ -20,7 +20,7 @@ const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset-10 ;
 const int Border_Width = 5;
 const int Snake_Size = 10;
 
-HPEN Snake_Pen,BG_Pen;
+HPEN Snake_Pen,BG_Pen,GB_Pen;
 HBRUSH GB_Brush, Snake_Brush,BG_Brush;
 HWND Hwnd;
 int Snake_X_Pos;
@@ -47,6 +47,7 @@ void Init(HWND hWnd) {
     Game_Board.bottom = GB_Height;
 
     GB_Brush = CreateSolidBrush(RGB(255, 255, 255));
+    GB_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
     Snake_Pen = CreatePen(BS_SOLID, 0, RGB(237, 28, 36));
     Snake_Brush = CreateSolidBrush(RGB(237, 28, 36));
     BG_Pen = CreatePen(BS_SOLID,0,RGB(0, 0, 0));
@@ -71,6 +72,7 @@ void Draw_Game_Board() {
 void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
     
+    SelectObject(hdc, GB_Pen);
     SelectObject(hdc, GB_Brush);
     //Top Gamefield border
     Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.right, Game_Board.top + Border_Width);
