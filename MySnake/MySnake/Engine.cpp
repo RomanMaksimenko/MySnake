@@ -27,10 +27,10 @@ int Snake_X_Pos;
 int Snake_Y_Pos;
 int Prev_Snake_X_Pos= Snake_X_Pos;
 int Prev_Snake_Y_Pos= Snake_Y_Pos;
+int Snake_Len;
 ESnake_Direction Direction=ESD_None;
-std::vector<RECT>SNAKE(3);
-std::vector<RECT>PREV_SNAKE(3);
-
+std::vector<RECT>SNAKE(10);
+std::vector<RECT>PREV_SNAKE(10);
 
 
 void Redraw_Snake();
@@ -54,12 +54,14 @@ void Init(HWND hWnd) {
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
     
     Hwnd = hWnd;
-
-    SNAKE[2].left = Snake_X_Pos;
-    SNAKE[2].top = Snake_Y_Pos;
-    SNAKE[2].right = SNAKE[2].left + Snake_Size;
-    SNAKE[2].bottom = SNAKE[2].top + Snake_Size;
-    SNAKE[1] = SNAKE[0] = SNAKE[2];
+    Snake_Len =(int)SNAKE.size()-1;
+    SNAKE[Snake_Len].left = Snake_X_Pos;
+    SNAKE[Snake_Len].top = Snake_Y_Pos;
+    SNAKE[Snake_Len].right = SNAKE[Snake_Len].left + Snake_Size;
+    SNAKE[Snake_Len].bottom = SNAKE[Snake_Len].top + Snake_Size;
+    for (int i = 0; i != Snake_Len; ++i)
+        SNAKE[i] = SNAKE[Snake_Len];
+    
 
     Redraw_Snake();
     SetTimer(Hwnd, Timer_ID, 100, 0);
@@ -87,18 +89,21 @@ void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
 }
 //---------------------------------------------------------------------------------
-void Redraw_Snake() {
+void Redraw_Snake() {//redrawing snake
     PREV_SNAKE = SNAKE;
-
-    SNAKE[2].left = Snake_X_Pos;
-    SNAKE[2].top = Snake_Y_Pos;
-    SNAKE[2].right = SNAKE[2].left + Snake_Size;
-    SNAKE[2].bottom = SNAKE[2].top + Snake_Size;
-    SNAKE[1] = PREV_SNAKE[2];
-    SNAKE[0] = PREV_SNAKE[1];
-    for(int i=2;i>=0;--i)
+    //New head position
+    SNAKE[Snake_Len].left = Snake_X_Pos;
+    SNAKE[Snake_Len].top = Snake_Y_Pos;
+    SNAKE[Snake_Len].right = SNAKE[Snake_Len].left + Snake_Size;
+    SNAKE[Snake_Len].bottom = SNAKE[Snake_Len].top + Snake_Size;
+    //update snake body coordinates
+    for (int i = 0; i != Snake_Len; ++i)
+        SNAKE[i] = PREV_SNAKE[i+1];
+    //erase previos snake
+    for(int i= Snake_Len;i>=0;--i)
     InvalidateRect(Hwnd, &PREV_SNAKE[i], FALSE);
-    for (int i = 2; i >= 0; --i)
+    //draw new snake
+    for (int i = Snake_Len; i >= 0; --i)
     InvalidateRect(Hwnd, &SNAKE[i], FALSE);
 }
 //---------------------------------------------------------------------------------
@@ -106,12 +111,12 @@ void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
     //Delete previos snake`s frame
     SelectObject(hdc, BG_Pen);
     SelectObject(hdc, BG_Brush);
-    for(int i=2;i>=0;--i)
+    for(int i= Snake_Len;i>=0;--i)
     Rectangle(hdc, PREV_SNAKE[i].left, PREV_SNAKE[i].top, PREV_SNAKE[i].left + Snake_Size, PREV_SNAKE[i].top + Snake_Size);
     //Drawing snake
     SelectObject(hdc, Snake_Pen);
     SelectObject(hdc, Snake_Brush);
-    for(int i=2;i>=0;--i)
+    for(int i= Snake_Len;i>=0;--i)
     Rectangle(hdc, SNAKE[i].left, SNAKE[i].top, SNAKE[i].left + Snake_Size, SNAKE[i].top + Snake_Size);
 
 }
@@ -126,11 +131,11 @@ int On_Timer() {//Snake`s moving on timer
     {
     case ESD_None:
         break;
-    case ESD_Left:Snake_X_Pos -= Snake_Size / 2; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size-Border_Width;
+    case ESD_Left:Snake_X_Pos -= Snake_Size/2 ; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size-Border_Width;
         break;
     case ESD_Right:Snake_X_Pos += Snake_Size/2; if (Snake_X_Pos >= GB_Width-Snake_Size - Border_Width / 2)Snake_X_Pos = GB_X_Offset+ Border_Width;
         break;
-    case ESD_Up:Snake_Y_Pos -= Snake_Size / 2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size- Border_Width;
+    case ESD_Up:Snake_Y_Pos -= Snake_Size/2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size- Border_Width;
         break;
     case ESD_down:Snake_Y_Pos += Snake_Size/2; if (Snake_Y_Pos >= GB_Height - Snake_Size - Border_Width / 2)Snake_Y_Pos = GB_Y_Offset+ Border_Width;
         break;
