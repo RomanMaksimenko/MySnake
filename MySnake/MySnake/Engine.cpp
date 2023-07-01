@@ -12,25 +12,28 @@ enum ESnake_Direction {
 };
 
 //Global Variables
-RECT Game_Board,Snake,Prev_Snake;
+RECT Game_Board,Snake,Prev_Snake,Apple,Prev_Apple;
 const int GB_X_Offset = 5;
 const int GB_Y_Offset = 5;
 const int GB_Width = Game_Screen_Height - GB_X_Offset;
 const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset-10 ;
 const int Border_Width = 5;
 const int Snake_Size = 10;
+const int Apple_Size = 8;
 
-HPEN Snake_Pen,BG_Pen,GB_Pen;
-HBRUSH GB_Brush, Snake_Brush,BG_Brush;
+HPEN Snake_Pen,BG_Pen,GB_Pen,Apple_Pen;
+HBRUSH GB_Brush, Snake_Brush,BG_Brush,Apple_Brush;
 HWND Hwnd;
 int Snake_X_Pos;
 int Snake_Y_Pos;
 int Prev_Snake_X_Pos= Snake_X_Pos;
 int Prev_Snake_Y_Pos= Snake_Y_Pos;
 int Snake_Len;
+int Apple_X_Pos, Apple_Y_Pos;
+bool Is_Intersect = false;
 ESnake_Direction Direction=ESD_None;
-std::vector<RECT>SNAKE(10);
-std::vector<RECT>PREV_SNAKE(10);
+std::vector<RECT>SNAKE(3);
+std::vector<RECT>PREV_SNAKE(3);
 
 
 void Redraw_Snake();
@@ -40,6 +43,15 @@ void Init(HWND hWnd) {
     srand(time(NULL));
     Snake_X_Pos = rand() % GB_Width;
     Snake_Y_Pos = rand() % GB_Height;
+
+    Apple_X_Pos = rand() % GB_Width;
+    Apple_Y_Pos = rand() % GB_Height;
+
+    Apple.left = Apple_X_Pos;
+    Apple.top = Apple_Y_Pos;
+    Apple.right = Apple.left + Apple_Size;
+    Apple.bottom = Apple.top + Apple_Size;
+    
     //Init boarders of gamefield
     Game_Board.left = GB_X_Offset;
     Game_Board.top = GB_Y_Offset;
@@ -52,6 +64,8 @@ void Init(HWND hWnd) {
     Snake_Brush = CreateSolidBrush(RGB(237, 28, 36));
     BG_Pen = CreatePen(BS_SOLID,0,RGB(0, 0, 0));
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
+    Apple_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
+    Apple_Brush = CreateSolidBrush(RGB(255, 255, 255));
     
     Hwnd = hWnd;
     Snake_Len =(int)SNAKE.size()-1;
@@ -62,7 +76,6 @@ void Init(HWND hWnd) {
     for (int i = 0; i != Snake_Len; ++i)
         SNAKE[i] = SNAKE[Snake_Len];
     
-
     Redraw_Snake();
     SetTimer(Hwnd, Timer_ID, 100, 0);
 }
@@ -89,6 +102,21 @@ void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
 }
 //---------------------------------------------------------------------------------
+void Redraw_Apple() {//redraiwng apple
+    Prev_Apple = Apple;
+    //get new apple position
+    Apple_X_Pos = rand() % GB_Width;
+    Apple_Y_Pos = rand() % GB_Height;
+    Apple.left = Apple_X_Pos;
+    Apple.top = Apple_Y_Pos;
+    Apple.right = Apple.left + Apple_Size;
+    Apple.bottom = Apple.top + Apple_Size;
+    //erase previos apple
+    InvalidateRect(Hwnd, &Prev_Apple, TRUE);
+    //draw new apple
+    InvalidateRect(Hwnd, &Apple, FALSE);
+}
+//---------------------------------------------------------------------------------
 void Redraw_Snake() {//redrawing snake
     PREV_SNAKE = SNAKE;
     //New head position
@@ -99,12 +127,25 @@ void Redraw_Snake() {//redrawing snake
     //update snake body coordinates
     for (int i = 0; i != Snake_Len; ++i)
         SNAKE[i] = PREV_SNAKE[i+1];
+    //snake eat`s apple
+    if (Is_Intersect) {
+         Redraw_Apple();
+        SNAKE.insert(SNAKE.begin(), PREV_SNAKE[0]);
+        Snake_Len = (int)SNAKE.size() - 1;
+        PREV_SNAKE.resize(PREV_SNAKE.size() + 1);
+        Is_Intersect = false;
+    }
+    RECT tmp;
+    if (IntersectRect(&tmp,&SNAKE[Snake_Len],&Apple)) {
+        Is_Intersect = true;
+    }
     //erase previos snake
     for(int i= Snake_Len;i>=0;--i)
     InvalidateRect(Hwnd, &PREV_SNAKE[i], FALSE);
     //draw new snake
     for (int i = Snake_Len; i >= 0; --i)
     InvalidateRect(Hwnd, &SNAKE[i], FALSE);
+
 }
 //---------------------------------------------------------------------------------
 void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
@@ -121,9 +162,21 @@ void Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
 
 }
 //---------------------------------------------------------------------------------
+void Draw_Apple(HDC hdc, RECT& paint_area) {
+
+    SelectObject(hdc, BG_Pen);
+    SelectObject(hdc, BG_Brush);
+    Ellipse(hdc, Prev_Apple.left, Prev_Apple.top, Prev_Apple.left+Apple_Size, Prev_Apple.top + Apple_Size);
+
+    SelectObject(hdc, Apple_Pen);
+    SelectObject(hdc, Apple_Brush);
+   Ellipse( hdc,Apple_X_Pos,Apple_Y_Pos, Apple_X_Pos+Apple_Size, Apple_Y_Pos + Apple_Size);
+}
+//---------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
     Draw_Game_Board(hdc);
     Draw_Snake(hdc, paint_area);
+    Draw_Apple(hdc, paint_area);
 }
 //---------------------------------------------------------------------------------
 int On_Timer() {//Snake`s moving on timer
@@ -131,16 +184,19 @@ int On_Timer() {//Snake`s moving on timer
     {
     case ESD_None:
         break;
-    case ESD_Left:Snake_X_Pos -= Snake_Size/2 ; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size-Border_Width;
+    case ESD_Left:Snake_X_Pos -= Snake_Size / 2; if (Snake_X_Pos <= GB_X_Offset)Snake_X_Pos = GB_Width - Snake_Size - Border_Width;
         break;
-    case ESD_Right:Snake_X_Pos += Snake_Size/2; if (Snake_X_Pos >= GB_Width-Snake_Size - Border_Width / 2)Snake_X_Pos = GB_X_Offset+ Border_Width;
+    case ESD_Right:Snake_X_Pos += Snake_Size / 2; if (Snake_X_Pos >= GB_Width - Snake_Size - Border_Width / 2)Snake_X_Pos = GB_X_Offset + Border_Width;
         break;
-    case ESD_Up:Snake_Y_Pos -= Snake_Size/2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size- Border_Width;
+    case ESD_Up:Snake_Y_Pos -= Snake_Size / 2; if (Snake_Y_Pos <= GB_Y_Offset)Snake_Y_Pos = GB_Height - Snake_Size - Border_Width;
         break;
-    case ESD_down:Snake_Y_Pos += Snake_Size/2; if (Snake_Y_Pos >= GB_Height - Snake_Size - Border_Width / 2)Snake_Y_Pos = GB_Y_Offset+ Border_Width;
+    case ESD_down:Snake_Y_Pos += Snake_Size / 2; if (Snake_Y_Pos >= GB_Height - Snake_Size - Border_Width / 2)Snake_Y_Pos = GB_Y_Offset + Border_Width;
         break;
     default:
         break;
+    }
+    if (Is_Intersect) {
+        Redraw_Apple();
     }
     Redraw_Snake();
     return 0;
