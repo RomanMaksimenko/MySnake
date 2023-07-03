@@ -1,45 +1,7 @@
-#include <stdlib.h>
-#include <time.h>
-#include<vector>
+
 #include "Engine.h"
-
-enum ESnake_Direction {
-    ESD_None,
-    ESD_Left,
-    ESD_Right,
-    ESD_Up,
-    ESD_down
-};
-
-//Global Variables
-RECT Game_Board,Snake,Prev_Snake,Apple,Prev_Apple;
-const int GB_X_Offset = 5;
-const int GB_Y_Offset = 5;
-const int GB_Width = Game_Screen_Height - GB_X_Offset;
-const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset-10 ;
-const int Border_Width = 5;
-const int Snake_Size = 10;
-const int Apple_Size = 8;
-
-HPEN Snake_Pen,BG_Pen,GB_Pen,Apple_Pen;
-HBRUSH GB_Brush, Snake_Brush,BG_Brush,Apple_Brush;
-HWND Hwnd;
-int Snake_X_Pos;
-int Snake_Y_Pos;
-int Prev_Snake_X_Pos= Snake_X_Pos;
-int Prev_Snake_Y_Pos= Snake_Y_Pos;
-int Snake_Len,_Snake_Len;
-int Apple_X_Pos, Apple_Y_Pos;
-int To_Turn = 0;
-bool Is_Intersect = false,Turn=true;
-ESnake_Direction Direction=ESD_None;
-CList<RECT> _SNAKE,_SNAKE_TAIL;
-CList<RECT> _Prev_SNAKE, _Prev_SNAKE_TAIL;
-
-
-void Redraw_Snake();
 //---------------------------------------------------------------------------------
-int Random_int(int min,int max) {
+int CsEngine::Random_int(int min,int max) {
     
     int num= rand() % GB_Width;
     while(num<=min||num>=max)
@@ -47,7 +9,7 @@ int Random_int(int min,int max) {
     return num;
 } 
 //---------------------------------------------------------------------------------
-void Init(HWND hWnd) {
+void CsEngine::Init(HWND hWnd) {
     //Starting snake from random position
     srand(time(NULL));
     Snake_X_Pos = Random_int(GB_X_Offset+ Border_Width, GB_Width- Border_Width);
@@ -104,11 +66,11 @@ void Init(HWND hWnd) {
     SetTimer(Hwnd, Timer_ID, 100, 0);
 }
 //---------------------------------------------------------------------------------
-void Draw_Game_Board() {
+void CsEngine::Draw_Game_Board() {
     InvalidateRect(Hwnd, &Game_Board, FALSE);
 }
 //---------------------------------------------------------------------------------
-void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
+void CsEngine::Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
     
     SelectObject(hdc, GB_Pen);
@@ -126,7 +88,7 @@ void Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 
 }
 //---------------------------------------------------------------------------------
-void Redraw_Apple() {//redraiwng apple
+void CsEngine::Redraw_Apple() {//redraiwng apple
     Prev_Apple = Apple;
     //get new apple position
     Apple_X_Pos = Random_int(GB_X_Offset + Border_Width, GB_Width - Border_Width - Apple_Size);
@@ -141,7 +103,7 @@ void Redraw_Apple() {//redraiwng apple
     InvalidateRect(Hwnd, &Apple, FALSE);
 }
 //---------------------------------------------------------------------------------
-void Check_Snake_Eat_Apple() {
+void CsEngine::Check_Snake_Eat_Apple() {
 
     if (Is_Intersect) {
         Redraw_Apple();
@@ -155,7 +117,7 @@ void Check_Snake_Eat_Apple() {
     }
 }
 //---------------------------------------------------------------------------------
-void Redraw_Snake() {//redrawing snake
+void CsEngine::Redraw_Snake() {//redrawing snake
     CList<RECT> tmp, prev_tmp;
     tmp = _SNAKE;
     prev_tmp = _Prev_SNAKE;
@@ -205,7 +167,7 @@ void Redraw_Snake() {//redrawing snake
 
 }
 //---------------------------------------------------------------------------------
-void Draw_Snake(HDC hdc, RECT& paint_area) {//Draw a snake
+void CsEngine::Draw_Snake(HDC hdc, RECT& paint_area) {//Draw a snake
     //Delete previos snake`s frame
     SelectObject(hdc, BG_Pen);
     SelectObject(hdc, BG_Brush);
@@ -226,7 +188,7 @@ void Draw_Snake(HDC hdc, RECT& paint_area) {//Draw a snake
 
 }
 //---------------------------------------------------------------------------------
-void Draw_Apple(HDC hdc, RECT& paint_area) {
+void CsEngine::Draw_Apple(HDC hdc, RECT& paint_area) {
 
     SelectObject(hdc, BG_Pen);
     SelectObject(hdc, BG_Brush);
@@ -237,13 +199,13 @@ void Draw_Apple(HDC hdc, RECT& paint_area) {
    Ellipse( hdc,Apple_X_Pos,Apple_Y_Pos, Apple_X_Pos+Apple_Size, Apple_Y_Pos + Apple_Size);
 }
 //---------------------------------------------------------------------------------
-void Draw_Frame(HDC hdc,RECT& paint_area) {//Draw game screen
+void CsEngine::Draw_Frame(HDC hdc,RECT& paint_area) {//Draw game screen
     Draw_Game_Board(hdc);
     Draw_Snake(hdc, paint_area);
     Draw_Apple(hdc, paint_area);
 }
 //---------------------------------------------------------------------------------
-int On_Timer() {//Snake`s moving on timer
+int CsEngine::On_Timer() {//Snake`s moving on timer
     To_Turn++;
     if (To_Turn == 2) {
         Turn = true;
@@ -270,7 +232,7 @@ int On_Timer() {//Snake`s moving on timer
     Redraw_Snake();
     return 0;
 }
-int On_Key_Down(EKey_Type key) {//Changing direction of Snake`s moving on key down
+int CsEngine::On_Key_Down(EKey_Type key) {//Changing direction of Snake`s moving on key down
     switch (key)
     {
     case EKT_None:

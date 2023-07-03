@@ -10,6 +10,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+CsEngine Engine;                                // Game Engine
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -105,21 +106,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT window_rect{};
    window_rect.left = 0;
    window_rect.top = 0;
-   window_rect.right = Game_Screen_Width;
-   window_rect.bottom = Game_Screen_Height;
+   window_rect.right = Engine.Game_Screen_Width;
+   window_rect.bottom = Engine.Game_Screen_Height;
    AdjustWindowRect(
        &window_rect,
        WS_OVERLAPPEDWINDOW,
        TRUE
    );
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      0, 0, Game_Screen_Width, Game_Screen_Height, nullptr, nullptr, hInstance, nullptr);
+      0, 0, Engine.Game_Screen_Width, Engine.Game_Screen_Height, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
       return FALSE;
    }
-   Init(hWnd);
+   Engine.Init(hWnd);
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -165,23 +166,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-            Draw_Frame(hdc,ps.rcPaint);
+            Engine.Draw_Frame(hdc,ps.rcPaint);
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_KEYDOWN:
         switch (wParam)
         {
-        case VK_LEFT:return On_Key_Down(EKT_Left); break;
-        case VK_RIGHT:return On_Key_Down(EKT_Right); break;
-        case VK_UP:return On_Key_Down(EKT_Up); break;
-        case VK_DOWN:return On_Key_Down(EKT_Down); break;
+        case VK_LEFT:return Engine.On_Key_Down(EKT_Left); break;
+        case VK_RIGHT:return Engine.On_Key_Down(EKT_Right); break;
+        case VK_UP:return Engine.On_Key_Down(EKT_Up); break;
+        case VK_DOWN:return Engine.On_Key_Down(EKT_Down); break;
         }
         break;
     case WM_TIMER:
     {    
-        if(wParam==Timer_ID)
-        return On_Timer();
+        if(wParam== Engine.Timer_ID)
+        return Engine.On_Timer();
     }
 
     break;
