@@ -64,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+    WNDCLASSEXW wcex{};
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -102,7 +102,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     
    hInst = hInstance; // Store instance handle in our global variable
   // Creating specific sized window
-   RECT window_rect;
+   RECT window_rect{};
    window_rect.left = 0;
    window_rect.top = 0;
    window_rect.right = Game_Screen_Width;

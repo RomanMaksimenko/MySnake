@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "CList.h"
 // Enums
 enum EKey_Type {
 	EKT_None,
