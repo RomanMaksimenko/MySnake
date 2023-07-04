@@ -1,19 +1,49 @@
 #include "Engine.h"
 
 //---------------------------------------------------------------------------------
+void CApple::Redraw_Apple(CsEngine* engine) {//redraiwng apple
+    Prev_Apple = Apple;
+    //get new apple position
+    Apple_X_Pos = rand() % CsEngine::GB_Width;
+    Apple_Y_Pos = rand() % CsEngine::GB_Height;
+    Apple.left = Apple_X_Pos;
+    Apple.top = Apple_Y_Pos;
+    Apple.right = Apple.left + Apple_Size;
+    Apple.bottom = Apple.top + Apple_Size;
+    //erase previos apple
+    InvalidateRect(engine->Hwnd, &Prev_Apple, TRUE);
+    //draw new apple
+    InvalidateRect(engine->Hwnd, &Apple, FALSE);
+}
+//---------------------------------------------------------------------------------
+void CApple::Draw_Apple(HDC hdc, RECT& paint_area, CsEngine* engine) {
+
+    SelectObject(hdc, engine->BG_Pen);
+    SelectObject(hdc,engine->BG_Brush);
+    Ellipse(hdc, Prev_Apple.left, Prev_Apple.top, Prev_Apple.left + Apple_Size, Prev_Apple.top + Apple_Size);
+
+    SelectObject(hdc, Apple_Pen);
+    SelectObject(hdc, Apple_Brush);
+    Ellipse(hdc, Apple_X_Pos, Apple_Y_Pos, Apple_X_Pos + Apple_Size, Apple_Y_Pos + Apple_Size);
+}
+//---------------------------------------------------------------------------------
+
+
+
+//---------------------------------------------------------------------------------
 void CsEngine::Init(HWND hWnd) {
     //Starting snake from random position
     srand(time(NULL));
     Snake_X_Pos = rand() % GB_Width;
     Snake_Y_Pos = rand() % GB_Height;
 
-    Apple_X_Pos = rand() % GB_Width;
-    Apple_Y_Pos = rand() % GB_Height;
+    APPLE.Apple_X_Pos = rand() % GB_Width;
+    APPLE.Apple_Y_Pos = rand() % GB_Height;
 
-    Apple.left = Apple_X_Pos;
-    Apple.top = Apple_Y_Pos;
-    Apple.right = Apple.left + Apple_Size;
-    Apple.bottom = Apple.top + Apple_Size;
+   APPLE.Apple.left = APPLE.Apple_X_Pos;
+   APPLE.Apple.top = APPLE.Apple_Y_Pos;
+   APPLE.Apple.right = APPLE.Apple.left + APPLE.Apple_Size;
+   APPLE.Apple.bottom = APPLE.Apple.top + APPLE.Apple_Size;
     
     //Init boarders of gamefield
     Game_Board.left = GB_X_Offset;
@@ -27,12 +57,10 @@ void CsEngine::Init(HWND hWnd) {
     Snake_Brush = CreateSolidBrush(RGB(237, 28, 36));
     BG_Pen = CreatePen(BS_SOLID,0,RGB(0, 0, 0));
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
-    Apple_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
-    Apple_Brush = CreateSolidBrush(RGB(255, 255, 255));
+    APPLE.Apple_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
+    APPLE.Apple_Brush = CreateSolidBrush(RGB(255, 255, 255));
     
     Hwnd = hWnd;
-    SNAKE.resize(3);
-    PREV_SNAKE.resize(3);
     Snake_Len =(int)SNAKE.size()-1;
     SNAKE[Snake_Len].left = Snake_X_Pos;
     SNAKE[Snake_Len].top = Snake_Y_Pos;
@@ -62,21 +90,6 @@ void CsEngine::Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
     Rectangle(hdc, Game_Board.right- Border_Width, Game_Board.top, Game_Board.right, Game_Board.bottom);
 }
 //---------------------------------------------------------------------------------
-void CsEngine::Redraw_Apple() {//redraiwng apple
-    Prev_Apple = Apple;
-    //get new apple position
-    Apple_X_Pos = rand() % GB_Width;
-    Apple_Y_Pos = rand() % GB_Height;
-    Apple.left = Apple_X_Pos;
-    Apple.top = Apple_Y_Pos;
-    Apple.right = Apple.left + Apple_Size;
-    Apple.bottom = Apple.top + Apple_Size;
-    //erase previos apple
-    InvalidateRect(Hwnd, &Prev_Apple, TRUE);
-    //draw new apple
-    InvalidateRect(Hwnd, &Apple, FALSE);
-}
-//---------------------------------------------------------------------------------
 void CsEngine::Redraw_Snake() {//redrawing snake
     PREV_SNAKE = SNAKE;
     //New head position
@@ -89,14 +102,14 @@ void CsEngine::Redraw_Snake() {//redrawing snake
         SNAKE[i] = PREV_SNAKE[i+1];
     //snake eat`s apple
     if (Is_Intersect) {
-         Redraw_Apple();
+        APPLE.Redraw_Apple(this);
         SNAKE.insert(SNAKE.begin(), PREV_SNAKE[0]);
         Snake_Len = (int)SNAKE.size() - 1;
         PREV_SNAKE.resize(PREV_SNAKE.size() + 1);
         Is_Intersect = false;
     }
     RECT tmp;
-    if (IntersectRect(&tmp,&SNAKE[Snake_Len],&Apple)) {
+    if (IntersectRect(&tmp,&SNAKE[Snake_Len],&APPLE.Apple)) {
         Is_Intersect = true;
     }
     //erase previos snake
@@ -122,21 +135,10 @@ void CsEngine::Draw_Snake(HDC hdc, RECT& paint_area) {//Drawing a snake
 
 }
 //---------------------------------------------------------------------------------
-void CsEngine::Draw_Apple(HDC hdc, RECT& paint_area) {
-
-    SelectObject(hdc, BG_Pen);
-    SelectObject(hdc, BG_Brush);
-    Ellipse(hdc, Prev_Apple.left, Prev_Apple.top, Prev_Apple.left+Apple_Size, Prev_Apple.top + Apple_Size);
-
-    SelectObject(hdc, Apple_Pen);
-    SelectObject(hdc, Apple_Brush);
-   Ellipse( hdc,Apple_X_Pos,Apple_Y_Pos, Apple_X_Pos+Apple_Size, Apple_Y_Pos + Apple_Size);
-}
-//---------------------------------------------------------------------------------
 void CsEngine::Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
     Draw_Game_Board(hdc);
     Draw_Snake(hdc, paint_area);
-    Draw_Apple(hdc, paint_area);
+    APPLE.Draw_Apple(hdc, paint_area,this);
 }
 //---------------------------------------------------------------------------------
 int CsEngine::On_Timer() {//Snake`s moving on timer
@@ -156,7 +158,7 @@ int CsEngine::On_Timer() {//Snake`s moving on timer
         break;
     }
     if (Is_Intersect) {
-        Redraw_Apple();
+        APPLE.Redraw_Apple(this);
     }
     Redraw_Snake();
     return 0;

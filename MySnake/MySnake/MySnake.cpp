@@ -181,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_TIMER:
     {    
-        if(wParam== Engine.Timer_ID)
+        if(wParam== Timer_ID)
         return Engine.On_Timer();
     }
 
