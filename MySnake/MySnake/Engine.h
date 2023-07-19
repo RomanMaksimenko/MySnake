@@ -28,7 +28,9 @@ class CsEngine;
 
 class CApple {
 public:
-	static const int Apple_Size = 8;
+	CApple(){}
+	void Init();
+	static const int Apple_Size = 10;
 	int Apple_X_Pos, Apple_Y_Pos;
 	RECT  Apple, Prev_Apple;
 	HPEN Apple_Pen;
@@ -37,9 +39,32 @@ public:
 	void Draw_Apple(HDC hdc, RECT& paint_area, CsEngine* engine);
 };
 
+class CsSnake {
+public:
+	CsSnake() :Direction(ESD_None), SNAKE(3), PREV_SNAKE(3){}
+	void Init();
+	static const int Snake_Size = 10;
+	HPEN Snake_Pen;
+	HBRUSH  Snake_Brush;
+	RECT Snake, Prev_Snake;
+
+	int Snake_X_Pos;
+	int Snake_Y_Pos;
+	int Prev_Snake_X_Pos;
+	int Prev_Snake_Y_Pos;
+	int Snake_Len;
+
+	ESnake_Direction Direction;
+	std::vector<RECT>SNAKE;
+	std::vector<RECT>PREV_SNAKE;
+
+	void Redraw_Snake(CsEngine * engine);
+	void Draw_Snake(HDC hdc, RECT& paint_area, CsEngine* engine);
+};
+
 class CsEngine{
 public:
-	CsEngine():Is_Intersect(false), Direction(ESD_None),SNAKE(3),PREV_SNAKE(3){}
+  CsEngine(){}
   static const int ToolBar_Height = 50;
   static const int Game_Screen_Width = 640;
   static const int Game_Screen_Height = 480;
@@ -48,7 +73,7 @@ public:
   static const int GB_Width = Game_Screen_Height - GB_X_Offset;
   static const int GB_Height = Game_Screen_Height - ToolBar_Height - GB_Y_Offset - 10;
   static const int Border_Width = 5;
-  static const int Snake_Size = 10;
+ 
   HWND Hwnd;
   HPEN BG_Pen;
   HBRUSH  BG_Brush;
@@ -59,24 +84,12 @@ public:
   int On_Key_Down(EKey_Type);
 
 private:
-	RECT Game_Board, Snake, Prev_Snake;
-	HPEN Snake_Pen , GB_Pen, Apple_Pen;
-	HBRUSH GB_Brush, Snake_Brush, Apple_Brush;
-	
-	int Snake_X_Pos;
-	int Snake_Y_Pos;
-	int Prev_Snake_X_Pos;
-	int Prev_Snake_Y_Pos;
-	int Snake_Len;
-	bool Is_Intersect;
+	HPEN GB_Pen;
+	HBRUSH GB_Brush;
 	CApple APPLE;
-	ESnake_Direction Direction;
-	std::vector<RECT>SNAKE;
-	std::vector<RECT>PREV_SNAKE;
-
+	CsSnake Snake;
+	RECT Game_Board;
 	void Draw_Game_Board();
 	void Draw_Game_Board(HDC hdc);
-	void Redraw_Snake();
-	void Draw_Snake(HDC hdc, RECT& paint_area);
 	
 };
