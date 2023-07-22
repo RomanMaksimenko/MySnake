@@ -13,13 +13,11 @@ void CApple::Init() {
     Apple.top = Apple_Y_Pos;
     Apple.right = Apple.left + Apple_Size;
     Apple.bottom = Apple.top + Apple_Size;
-    Prev_Apple = Apple;
     Apple_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
     Apple_Brush = CreateSolidBrush(RGB(255, 255, 255));
 }
 //---------------------------------------------------------------------------------
 void CApple::Redraw_Apple(CsEngine* engine) {//redraiwng apple
-    Prev_Apple = Apple;
     //get new apple position
     Apple_X_Pos = Grid[rand() % 45];
     Apple_Y_Pos = Grid[rand() % 45];
@@ -27,20 +25,18 @@ void CApple::Redraw_Apple(CsEngine* engine) {//redraiwng apple
     Apple.top = Apple_Y_Pos;
     Apple.right = Apple.left + Apple_Size;
     Apple.bottom = Apple.top + Apple_Size;
-    //erase previos apple
-    InvalidateRect(engine->Hwnd, &Prev_Apple, TRUE);
     //draw new apple
     InvalidateRect(engine->Hwnd, &Apple, FALSE);
 }
 //---------------------------------------------------------------------------------
-void CApple::Draw_Apple(HDC hdc, RECT& paint_area, CsEngine* engine) {
+void CApple::Draw_Apple(HDC hdc, RECT& paint_area) {
     RECT intersection_rect;
     if (!IntersectRect(&intersection_rect, &paint_area, &Apple))
         return;
-   
-    SelectObject(hdc, engine->BG_Pen);
-    SelectObject(hdc,engine->BG_Brush);
-    Ellipse(hdc, Prev_Apple.left, Prev_Apple.top, Prev_Apple.left + Apple_Size, Prev_Apple.top + Apple_Size);
+    // Prev_Apple will be  redrawing with the head of snake because it have the same coordinates   
+    //SelectObject(hdc, engine->BG_Pen);
+    //SelectObject(hdc,engine->BG_Brush);
+    //Ellipse(hdc, Prev_Apple.left, Prev_Apple.top, Prev_Apple.left + Apple_Size, Prev_Apple.top + Apple_Size);
 
     SelectObject(hdc, Apple_Pen);
     SelectObject(hdc, Apple_Brush);
@@ -106,8 +102,6 @@ void CsEngine::Init(HWND hWnd) {
             Grid[i] = grid;
             grid += 10;
     }
-
-   
     APPLE.Init();
     Snake.Init();
     //Init boarders of gamefield
@@ -147,7 +141,7 @@ void CsEngine::Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
 void CsEngine::Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
     Draw_Game_Board(hdc);
     Snake.Draw_Snake(hdc, paint_area,this);
-    APPLE.Draw_Apple(hdc, paint_area,this);
+    APPLE.Draw_Apple(hdc, paint_area);
 }
 //---------------------------------------------------------------------------------
 int CsEngine::On_Timer() {//Snake`s moving on timer

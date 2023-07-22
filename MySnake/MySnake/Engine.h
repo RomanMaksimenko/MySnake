@@ -32,11 +32,11 @@ public:
 	void Init();
 	static const int Apple_Size = 10;
 	int Apple_X_Pos, Apple_Y_Pos;
-	RECT  Apple, Prev_Apple;
+	RECT  Apple;
 	HPEN Apple_Pen;
 	HBRUSH  Apple_Brush;
     void Redraw_Apple(CsEngine* engine);
-	void Draw_Apple(HDC hdc, RECT& paint_area, CsEngine* engine);
+	void Draw_Apple(HDC hdc, RECT& paint_area);
 };
 
 class CsSnake {
