@@ -28,34 +28,28 @@ class CsEngine;
 
 class CApple {
 public:
-	CApple() {}
+	CApple();
 	void Init();
 	RECT  Apple;
-	void Redraw_Apple(CsEngine* engine);
-	void Draw_Apple(HDC hdc, RECT& paint_area);
+	void Redraw(CsEngine* engine);
+	void Draw(HDC hdc, RECT& paint_area);
 	static const int Apple_Size = 10;
-	int Apple_X_Pos, Apple_Y_Pos;
 private:
-	
-
-	
-
+	int X_Pos, Y_Pos;
 	HPEN Apple_Pen;
 	HBRUSH  Apple_Brush;
 };
 
 class CsSnake {
 public:
-	CsSnake() :Direction(ESD_None), SNAKE(3), PREV_SNAKE(3) {}
+	CsSnake();
 	void Init();
 	static const int Snake_Size = 10;
-	int Snake_X_Pos;
-	int Snake_Y_Pos;
-	int Prev_Snake_X_Pos;
-	int Prev_Snake_Y_Pos;
+	int X_Pos;
+	int Y_Pos;
 	ESnake_Direction Direction;
-	void Redraw_Snake(CsEngine* engine);
-	void Draw_Snake(HDC hdc, RECT& paint_area, CsEngine* engine);
+	void Move(CsEngine* engine);
+	void Draw(HDC hdc, RECT& paint_area, CsEngine* engine);
 	int Snake_Len;
 	std::vector<RECT>SNAKE;
 	std::vector<RECT>PREV_SNAKE;
@@ -65,13 +59,13 @@ private:
 	RECT Snake, Prev_Snake;
 
 };
-class CsEngine;
+
 class CsGame_Board {
 public:
+	CsGame_Board();
 	void Init();
 	RECT Game_Board;
-	void Draw_Game_Board(HDC hdc);
-
+	void Draw(HDC hdc);
 	static const int ToolBar_Height = 50;
 	static const int Game_Screen_Width = 640;
 	static const int Game_Screen_Height = 480;
@@ -87,7 +81,7 @@ private:
 
 class CsEngine{
 public:
-  CsEngine(){}
+  CsEngine();
   HWND Hwnd;
   HPEN BG_Pen;
   HBRUSH  BG_Brush;
