@@ -3,11 +3,11 @@
 //Coordinates grid
 int Grid[45];
 
-
+//CApple
 //---------------------------------------------------------------------------------
 void CApple::Init() {
     Apple_X_Pos = Grid[rand() % 45];
-    Apple_Y_Pos = Grid[rand() % 45];
+    Apple_Y_Pos = Grid[rand() % 39];
 
     Apple.left = Apple_X_Pos;
     Apple.top = Apple_Y_Pos;
@@ -20,7 +20,7 @@ void CApple::Init() {
 void CApple::Redraw_Apple(CsEngine* engine) {//redraiwng apple
     //get new apple position
     Apple_X_Pos = Grid[rand() % 45];
-    Apple_Y_Pos = Grid[rand() % 45];
+    Apple_Y_Pos = Grid[rand() % 39];
     Apple.left = Apple_X_Pos;
     Apple.top = Apple_Y_Pos;
     Apple.right = Apple.left + Apple_Size;
@@ -42,11 +42,13 @@ void CApple::Draw_Apple(HDC hdc, RECT& paint_area) {
     SelectObject(hdc, Apple_Brush);
     Ellipse(hdc, Apple_X_Pos, Apple_Y_Pos, Apple_X_Pos + Apple_Size, Apple_Y_Pos + Apple_Size);
 }
+
+//CsSnake
 //---------------------------------------------------------------------------------
 void CsSnake::Init() {
     srand(time(NULL));
     Snake_X_Pos = Grid[rand() % 45];
-    Snake_Y_Pos = Grid[rand() % 45];
+    Snake_Y_Pos = Grid[rand() % 39];
     Snake_Pen = CreatePen(BS_SOLID, 0, RGB(237, 28, 36));
     Snake_Brush = CreateSolidBrush(RGB(237, 28, 36));
     Snake_Len = (int)SNAKE.size() - 1;
@@ -94,16 +96,10 @@ void CsSnake::Draw_Snake(HDC hdc, RECT& paint_area, CsEngine* engine) {//Drawing
         Rectangle(hdc, SNAKE[i].left, SNAKE[i].top, SNAKE[i].left + Snake_Size, SNAKE[i].top + Snake_Size);
 
 }
+
+//CsGame_Board
 //---------------------------------------------------------------------------------
-void CsEngine::Init(HWND hWnd) {
-    //Starting snake from random position
-    int grid = 11;
-    for (int i = 0; i != 45; ++i) {
-            Grid[i] = grid;
-            grid += 10;
-    }
-    APPLE.Init();
-    Snake.Init();
+void CsGame_Board::Init() {
     //Init boarders of gamefield
     Game_Board.left = GB_X_Offset;
     Game_Board.top = GB_Y_Offset;
@@ -112,6 +108,33 @@ void CsEngine::Init(HWND hWnd) {
 
     GB_Brush = CreateSolidBrush(RGB(255, 255, 255));
     GB_Pen = CreatePen(BS_SOLID, 0, RGB(255, 255, 255));
+}
+//---------------------------------------------------------------------------------
+void CsGame_Board::Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
+    SelectObject(hdc, GB_Pen);
+    SelectObject(hdc, GB_Brush);
+    //Top Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.right, Game_Board.top + Border_Width);
+    //Bottom Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.bottom - Border_Width + 1, Game_Board.right, Game_Board.bottom + 1);
+    //Left Gamefield border
+    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.left + Border_Width, Game_Board.bottom);
+    //Right Gamefield border
+    Rectangle(hdc, Game_Board.right - Border_Width + 1, Game_Board.top, Game_Board.right + 1, Game_Board.bottom);
+}
+//---------------------------------------------------------------------------------
+void CsEngine::Init(HWND hWnd) {
+    //Starting snake from random position
+
+    int grid = 11;
+    for (int i = 0; i != 45; ++i) {
+            Grid[i] = grid;
+            grid += 10;
+    }
+
+    Snake.Init();
+    APPLE.Init();
+    Game_Board.Init();
     BG_Pen = CreatePen(BS_SOLID,0,RGB(0, 0, 0));
     BG_Brush = CreateSolidBrush(RGB(0, 0, 0));
     
@@ -120,26 +143,13 @@ void CsEngine::Init(HWND hWnd) {
     Snake.Redraw_Snake(this);
 }
 //---------------------------------------------------------------------------------
-void CsEngine::Draw_Game_Board() {
-    InvalidateRect(Hwnd, &Game_Board, FALSE);
-}
-//---------------------------------------------------------------------------------
-void CsEngine::Draw_Game_Board(HDC hdc) {//Drawing boarders of gamefield
-    SelectObject(hdc, GB_Pen);
-    SelectObject(hdc, GB_Brush);
-    //Top Gamefield border
-    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.right, Game_Board.top + Border_Width);
-    //Bottom Gamefield border
-    Rectangle(hdc, Game_Board.left, Game_Board.bottom - Border_Width, Game_Board.right, Game_Board.bottom);
-    //Left Gamefield border
-    Rectangle(hdc, Game_Board.left, Game_Board.top, Game_Board.left + Border_Width, Game_Board.bottom);
-    //Right Gamefield border
-    Rectangle(hdc, Game_Board.right- Border_Width, Game_Board.top, Game_Board.right, Game_Board.bottom);
-}
+//void CsEngine::Draw_Game_Board() {
+//    InvalidateRect(Hwnd, &Game_Board, FALSE);
+//}
 //---------------------------------------------------------------------------------
 
 void CsEngine::Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
-    Draw_Game_Board(hdc);
+    Game_Board.Draw_Game_Board(hdc);
     Snake.Draw_Snake(hdc, paint_area,this);
     APPLE.Draw_Apple(hdc, paint_area);
 }
@@ -149,18 +159,17 @@ int CsEngine::On_Timer() {//Snake`s moving on timer
     {
     case ESD_None:
         break;
-    case ESD_Left:Snake.Snake_X_Pos -= Snake.Snake_Size ; if (Snake.Snake_X_Pos <= GB_X_Offset)Snake.Snake_X_Pos = GB_Width - Snake.Snake_Size - Border_Width;
+    case ESD_Left:Snake.Snake_X_Pos -= Snake.Snake_Size ; if (Snake.Snake_X_Pos <= Game_Board.GB_X_Offset)Snake.Snake_X_Pos = Grid[44]+CsSnake::Snake_Size;
         break;
-    case ESD_Right:Snake.Snake_X_Pos += Snake.Snake_Size ; if (Snake.Snake_X_Pos >= GB_Width - Snake.Snake_Size - Border_Width / 2)Snake.Snake_X_Pos = GB_X_Offset + Border_Width;
+    case ESD_Right:Snake.Snake_X_Pos += Snake.Snake_Size ; if (Snake.Snake_X_Pos >= Game_Board.GB_Width - Snake.Snake_Size - Game_Board.Border_Width / 2)Snake.Snake_X_Pos = Grid[0];
         break;
-    case ESD_Up:Snake.Snake_Y_Pos -= Snake.Snake_Size ; if (Snake.Snake_Y_Pos <= GB_Y_Offset)Snake.Snake_Y_Pos = GB_Height - Snake.Snake_Size - Border_Width;
+    case ESD_Up:Snake.Snake_Y_Pos -= Snake.Snake_Size ; if (Snake.Snake_Y_Pos <= Game_Board.GB_Y_Offset)Snake.Snake_Y_Pos = Grid[38]+CsSnake::Snake_Size;
         break;
-    case ESD_down:Snake.Snake_Y_Pos += Snake.Snake_Size ; if (Snake.Snake_Y_Pos >= GB_Height - Snake.Snake_Size - Border_Width / 2)Snake.Snake_Y_Pos = GB_Y_Offset + Border_Width;
+    case ESD_down:Snake.Snake_Y_Pos += Snake.Snake_Size ; if (Snake.Snake_Y_Pos >= Game_Board.GB_Height - Snake.Snake_Size - Game_Board.Border_Width / 2)Snake.Snake_Y_Pos = Grid[0];
         break;
     default:
         break;
     }
-
     if (Snake.Snake_X_Pos == APPLE.Apple.left && Snake.Snake_Y_Pos== APPLE.Apple.top) {
         APPLE.Redraw_Apple(this);
         Snake.SNAKE.insert(Snake.SNAKE.begin(), Snake.PREV_SNAKE[0]);

@@ -106,15 +106,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT window_rect;
    window_rect.left = 0;
    window_rect.top = 0;
-   window_rect.right = Engine.Game_Screen_Width;
-   window_rect.bottom = Engine.Game_Screen_Height;
+   window_rect.right = Engine.Game_Board.Game_Screen_Width;
+   window_rect.bottom = Engine.Game_Board.Game_Screen_Height;
    AdjustWindowRect(
        &window_rect,
        WS_OVERLAPPEDWINDOW,
        TRUE
    );
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      0, 0, Engine.Game_Screen_Width, Engine.Game_Screen_Height, nullptr, nullptr, hInstance, nullptr);
+      0, 0, Engine.Game_Board.Game_Screen_Width, Engine.Game_Board.Game_Screen_Height, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
