@@ -127,6 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Apple.h" />
+    <ClInclude Include="Snake.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameBoard.h" />
@@ -135,9 +138,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Apple.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameBoard.cpp" />
     <ClCompile Include="MySnake.cpp" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MySnake.rc" />

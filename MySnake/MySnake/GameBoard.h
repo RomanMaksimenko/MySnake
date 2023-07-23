@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Windows.h>
+#include "Config.h"
 class CsGame_Board {
 public:
 	CsGame_Board();
