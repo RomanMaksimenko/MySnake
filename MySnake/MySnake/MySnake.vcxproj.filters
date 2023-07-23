@@ -19,6 +19,9 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{e747b373-d233-472f-8913-9f4a4247bf03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameBoard">
+      <UniqueIdentifier>{3e03a3d8-09e0-49f1-87f2-34cf19ad446d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -35,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="MySnake.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="GameBoard.h">
+      <Filter>GameBoard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameBoard.cpp">
+      <Filter>GameBoard</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
