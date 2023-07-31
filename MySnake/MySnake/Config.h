@@ -5,6 +5,13 @@
 #include <time.h>
 #include<vector>
 
+enum EKey_Type {
+	EKT_None,
+	EKT_Up,
+	EKT_Down,
+	EKT_Left,
+	EKT_Right
+};
 enum ESnake_Direction {
 	ESD_None,
 	ESD_Left,

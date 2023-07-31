@@ -20,7 +20,7 @@ void CsSnake::Init() {
         SNAKE[i] = SNAKE[Snake_Len];
 }
 //---------------------------------------------------------------------------------
-void CsSnake::Move(HWND hwnd) {//redrawing snake
+void CsSnake::Redraw(HWND hwnd) {//redrawing snake
     PREV_SNAKE = SNAKE;
     //New head position
     SNAKE[Snake_Len].left = X_Pos;
@@ -56,3 +56,24 @@ void CsSnake::Draw(HDC hdc, RECT& paint_area,HPEN bg_pen,HBRUSH bg_brush) {//Dra
         Rectangle(hdc, SNAKE[i].left, SNAKE[i].top, SNAKE[i].left + Snake_Size, SNAKE[i].top + Snake_Size);
 
 }
+//---------------------------------------------------------------------------------
+void CsSnake::Move()
+{
+    switch (Direction)
+    {
+    case ESD_None:
+        break;
+    case ESD_Left:X_Pos -= Snake_Size; if (X_Pos <= CsGame_Board::GB_X_Offset)X_Pos = Grid[44] + Snake_Size;
+        break;
+    case ESD_Right:X_Pos += Snake_Size; if (X_Pos >= CsGame_Board::GB_Width - Snake_Size - CsGame_Board::Border_Width / 2)X_Pos = Grid[0];
+        break;
+    case ESD_Up:Y_Pos -= Snake_Size; if (Y_Pos <= CsGame_Board::GB_Y_Offset)Y_Pos = Grid[38] + Snake_Size;
+        break;
+    case ESD_down:Y_Pos += Snake_Size; if (Y_Pos >= CsGame_Board::GB_Height -Snake_Size - CsGame_Board::Border_Width / 2)Y_Pos = Grid[0];
+        break;
+    default:
+        break;
+    }
+
+}
+//---------------------------------------------------------------------------------

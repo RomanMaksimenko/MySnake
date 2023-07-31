@@ -1,20 +1,9 @@
 #pragma once
 
-#include "GameBoard.h"
+
 #include "Apple.h"
 #include "Snake.h"
 // Enums
-enum EKey_Type {
-	EKT_None,
-	EKT_Up,
-	EKT_Down,
-	EKT_Left,
-	EKT_Right
-};
-
-
-
-
 
 
 static const int Timer_ID = WM_USER + 1;

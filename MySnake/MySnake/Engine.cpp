@@ -1,8 +1,4 @@
 #include "Engine.h"
-#include <iostream>
-
-
-
 
 //CsEngine
 //---------------------------------------------------------------------------------
@@ -18,7 +14,7 @@ void CsEngine::Init(HWND hWnd) {
     
     Hwnd = hWnd;
     SetTimer(Hwnd, Timer_ID, 100, 0);
-    Snake.Move(Hwnd);
+    Snake.Redraw(Hwnd);
 }
 //---------------------------------------------------------------------------------
 
@@ -29,29 +25,15 @@ void CsEngine::Draw_Frame(HDC hdc,RECT& paint_area) {//Drawing game screen
 }
 //---------------------------------------------------------------------------------
 int CsEngine::On_Timer() {//Snake`s moving on timer
-    switch (Snake.Direction)
-    {
-    case ESD_None:
-        break;
-    case ESD_Left:Snake.X_Pos -= Snake.Snake_Size ; if (Snake.X_Pos <= Game_Board.GB_X_Offset)Snake.X_Pos = Grid[44]+CsSnake::Snake_Size;
-        break;
-    case ESD_Right:Snake.X_Pos += Snake.Snake_Size ; if (Snake.X_Pos >= Game_Board.GB_Width - Snake.Snake_Size - Game_Board.Border_Width / 2)Snake.X_Pos = Grid[0];
-        break;
-    case ESD_Up:Snake.Y_Pos -= Snake.Snake_Size ; if (Snake.Y_Pos <= Game_Board.GB_Y_Offset)Snake.Y_Pos = Grid[38]+CsSnake::Snake_Size;
-        break;
-    case ESD_down:Snake.Y_Pos += Snake.Snake_Size ; if (Snake.Y_Pos >= Game_Board.GB_Height - Snake.Snake_Size - Game_Board.Border_Width / 2)Snake.Y_Pos = Grid[0];
-        break;
-    default:
-        break;
-    }
-    if (Snake.X_Pos == APPLE.Apple.left && Snake.Y_Pos== APPLE.Apple.top) {
+    Snake.Move();
+    if (Snake.X_Pos == APPLE.Apple.left && Snake.Y_Pos == APPLE.Apple.top) {
         APPLE.Redraw(Hwnd);
         Snake.SNAKE.insert(Snake.SNAKE.begin(), Snake.PREV_SNAKE[0]);
         Snake.Snake_Len = (int)Snake.SNAKE.size() - 1;
         Snake.PREV_SNAKE.resize(Snake.PREV_SNAKE.size() + 1);
     }
 
-    Snake.Move(Hwnd);
+    Snake.Redraw(Hwnd);
     return 0;
 }
 int CsEngine::On_Key_Down(EKey_Type key) {//Changing direction of Snake`s moving on key down

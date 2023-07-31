@@ -1,5 +1,5 @@
 #pragma once
-#include "Config.h"
+#include "GameBoard.h"
 
 class CsSnake {
 public:
@@ -9,8 +9,9 @@ public:
 	int X_Pos;
 	int Y_Pos;
 	ESnake_Direction Direction;
-	void Move(HWND hwnd);
+	void Redraw(HWND hwnd);
 	void Draw(HDC hdc, RECT& paint_area, HPEN bg_pen, HBRUSH bg_brush);
+	void Move();
 	int Snake_Len;
 	std::vector<RECT>SNAKE;
 	std::vector<RECT>PREV_SNAKE;
