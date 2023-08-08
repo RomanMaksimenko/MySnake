@@ -28,9 +28,9 @@ int CsEngine::On_Timer() {//Snake`s moving on timer
     Snake.Move();
     if (Snake.X_Pos == APPLE.Apple.left && Snake.Y_Pos == APPLE.Apple.top) {
         APPLE.Redraw(Hwnd);
-        Snake.SNAKE.insert(Snake.SNAKE.begin(), Snake.PREV_SNAKE[0]);
-        Snake.Snake_Len = (int)Snake.SNAKE.size() - 1;
-        Snake.PREV_SNAKE.resize(Snake.PREV_SNAKE.size() + 1);
+        Snake.Body.insert(Snake.Body.begin(), Snake.Prev_Body[0]);
+        Snake.Snake_Len = (int)Snake.Body.size() - 1;
+        Snake.Prev_Body.resize(Snake.Prev_Body.size() + 1);
     }
 
     Snake.Redraw(Hwnd);

@@ -13,11 +13,9 @@ public:
 	void Draw(HDC hdc, RECT& paint_area, HPEN bg_pen, HBRUSH bg_brush);
 	void Move();
 	int Snake_Len;
-	std::vector<RECT>SNAKE;
-	std::vector<RECT>PREV_SNAKE;
+	std::vector<RECT>Body;
+	std::vector<RECT>Prev_Body;
 private:
 	HPEN Snake_Pen;
 	HBRUSH  Snake_Brush;
-	RECT Snake, Prev_Snake;
-
 };
