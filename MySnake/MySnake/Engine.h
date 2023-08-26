@@ -3,7 +3,7 @@
 
 #include "Apple.h"
 #include "Snake.h"
-// Enums
+
 
 
 static const int Timer_ID = WM_USER + 1;

@@ -20,18 +20,23 @@ void CsSnake::Init() {
 }
 //---------------------------------------------------------------------------------
 void CsSnake::Redraw(HWND hwnd) {//redrawing snake
-    Prev_Body = Body;
-    //New head position
-    Body[Snake_Len].left = X_Pos;
-    Body[Snake_Len].top = Y_Pos;
-    Body[Snake_Len].right = Body[Snake_Len].left + Snake_Size;
-    Body[Snake_Len].bottom = Body[Snake_Len].top + Snake_Size;
-    //update snake body coordinates
-    for (int i = 0; i != Snake_Len; ++i)
-        Body[i] = Prev_Body[i + 1];
-    //erase previos snake
-    for (int i = Snake_Len; i >= 0; --i)
-        InvalidateRect(hwnd, &Prev_Body[i], FALSE);
+    if (!Direction == ESD_None) {
+        Prev_Body = Body;
+        //New head position
+        Body[Snake_Len].left = X_Pos;
+        Body[Snake_Len].top = Y_Pos;
+        Body[Snake_Len].right = Body[Snake_Len].left + Snake_Size;
+        Body[Snake_Len].bottom = Body[Snake_Len].top + Snake_Size;
+        //update snake body coordinates
+        for (int i = 0; i != Snake_Len; ++i) {
+            Body[i] = Prev_Body[i + 1];
+            if (Body[i].left == Body[Snake_Len].left && Body[i].top == Body[Snake_Len].top)
+                Direction = ESD_None;
+        }
+        //erase previos snake
+        for (int i = Snake_Len; i >= 0; --i)
+            InvalidateRect(hwnd, &Prev_Body[i], FALSE);
+    }
     //draw new snake
     for (int i = Snake_Len; i >= 0; --i)
         InvalidateRect(hwnd, &Body[i], FALSE);
@@ -61,7 +66,7 @@ void CsSnake::Move()
     switch (Direction)
     {
     case ESD_None:
-        break;
+        return; break;
     case ESD_Left:X_Pos -= Snake_Size; if (X_Pos <= CsGame_Board::GB_X_Offset)X_Pos = Grid[44] + Snake_Size;
         break;
     case ESD_Right:X_Pos += Snake_Size; if (X_Pos >= CsGame_Board::GB_Width - Snake_Size - CsGame_Board::Border_Width / 2)X_Pos = Grid[0];

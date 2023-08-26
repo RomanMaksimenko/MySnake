@@ -37,6 +37,7 @@ int CsEngine::On_Timer() {//Snake`s moving on timer
     return 0;
 }
 int CsEngine::On_Key_Down(EKey_Type key) {//Changing direction of Snake`s moving on key down
+
     switch (key)
     {
     case EKT_None:
